@@ -46,15 +46,6 @@ document.addEventListener("DOMContentLoaded", function () {
         resetGame();
     }
 
-    function update() {
-        createSpikes();
-        moveSpikes();
-        checkCollision();
-        removeOffScreenSpikes();
-
-        requestAnimationFrame(update);
-    }
-
     function createSpikes() {
         const distanceBetweenSpikes = 150; // Adjust the distance between spikes
         const lastSpike = spikes[spikes.length - 1];
@@ -62,8 +53,17 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!lastSpike || window.innerWidth - lastSpike.getBoundingClientRect().right >= distanceBetweenSpikes) {
             const spike = document.createElement('div');
             spike.classList.add('spike');
+
             gameContainer.appendChild(spike);
             spikes.push(spike);
+
+            // 1 in 10 chance to create another spike next to it
+            if (spikes.length > 1 && Math.random() < 0.1) {
+                const nextSpike = document.createElement('div');
+                nextSpike.classList.add('spike', 'next-to');
+                gameContainer.appendChild(nextSpike);
+                spikes.push(nextSpike);
+            }
         }
     }
 
@@ -84,6 +84,15 @@ document.addEventListener("DOMContentLoaded", function () {
     function resetGame() {
         spikes.forEach(spike => spike.remove());
         spikes = [];
+    }
+
+    function update() {
+        createSpikes();
+        moveSpikes();
+        checkCollision();
+        removeOffScreenSpikes();
+
+        requestAnimationFrame(update);
     }
 
     update();
